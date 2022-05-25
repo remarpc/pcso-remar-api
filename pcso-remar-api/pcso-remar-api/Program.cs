@@ -62,16 +62,9 @@ app.MapDelete("/todoitems/{id}", async (int id, TodoDb db) =>
 
 app.MapDelete("/todoitems", async (TodoDb db) =>
 {
-    if ((db?.Todos?.Count() ?? 0) < 1)
-        return Results.Ok;
-
-    foreach (var todo in db.Todos)
-    {
-        db.Todos.Remove(todo);
-    }
-
+    await db.Database.EnsureDeletedAsync();
     await db.SaveChangesAsync();
-    return Results.Ok;
+    return Results.Ok(null);
 });
 
 app.Run();
@@ -82,7 +75,7 @@ class Todo
     public string? Name { get; set; }
     public bool IsComplete { get; set; }
     public string? Message { get; set; }
-    public DateTime? Created { get; set; } = DateTime.Now;
+    //public DateTime? Created { get; set; }
 }
 
 class TodoDb : DbContext
